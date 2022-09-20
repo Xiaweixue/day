@@ -1,11 +1,16 @@
 import axios from "axios";
+import { Loading } from "element-ui";
+
 const service = axios.create({
     baseURL: process.env.VUE_APP_BASE_API,
     timeout: '1000'
 })
 
+let loadingInstance = null
 service.interceptors.request.use(function (config) {
-
+    // loadingInstance = Loading.service({ fullscreen: true })
+    //获取token
+    config.headers.token=window.sessionStorage.getItem('token')
     return config;
 }, function (error) {
 
@@ -14,13 +19,13 @@ service.interceptors.request.use(function (config) {
 
 
 service.interceptors.response.use(function (response) {
-
+    // loadingInstance.close()
     return response;
 }, function (error) {
 
     return Promise.reject(error);
 });
-const http = (options) => {
+const services = (options) => {
     console.log(options);
     options.method = options.method || 'get'
     if (options.method.toLowerCase() === 'get') {
@@ -28,4 +33,4 @@ const http = (options) => {
     }
     return service(options)
 }
-export default http
+export default services

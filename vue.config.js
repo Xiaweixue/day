@@ -1,7 +1,7 @@
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
   transpileDependencies: true,
-  //项目打包之后黑白屏问题
+  // 项目打包之后黑白屏问题
   publicPath: './',
   devServer: {
     // 端口号
