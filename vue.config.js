@@ -4,7 +4,7 @@ module.exports = defineConfig({
   //项目打包之后黑白屏问题
   publicPath: './',
   devServer: {
-    //端口号
+    // 端口号
     port: 8888,
     //主机名
     host: 'localhost',
@@ -12,7 +12,7 @@ module.exports = defineConfig({
     open: true,
     //是否开启https
     https: false,
-    //配置跨域
+    // 配置跨域
     proxy: {
       [process.env.VUE_APP_BASE_API]: {
         target: process.env.VUE_APP_SERVICE_URL,
