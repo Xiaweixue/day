@@ -26,12 +26,13 @@ export default {
         login() {
             https.login({ username: this.username, password: this.password }).then(res => {
                 // console.log(res);
-                this.$router.push('/about')
+                sessionStorage.setItem('token', res.data.data.token);
+                this.$router.push(`/homeALL?name=${res.data.data.username}`)
 
                 this.username = '',
                     this.password = ''
-                sessionStorage.setItem('token', res.data.data.token)
-                console.log(res.data.data.token);
+
+
 
                 this.$message({
                     message: '恭喜你，登陆成功',
@@ -40,7 +41,7 @@ export default {
 
             }).catch(error => {
                 // console.log(error);
-                this.$message.error(error.request.response.slice(8, 1));
+                this.$message.error(error.request.response.slice(8, 15));
             })
         }
     },

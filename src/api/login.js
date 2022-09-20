@@ -8,7 +8,16 @@ const login = (data) => {
     })
 }
 
+const logOut=(data)=>{
+     return $axios ({
+        url:'/admin/logout',
+        method:'post',
+        data
+     })
+}
+
 
 export default {
-    login
+    login,
+    logOut
 }

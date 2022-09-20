@@ -6,24 +6,33 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path :'/',
-    name:'login',
-    component:login
-  },
-  
- 
+    path: '/',
+    name: 'login',
+    component: login
+  }, {
+    
+      path: '/homeALL',
+      name: 'homeALL',
+    
+      // route level code-splitting
+      // this generates a separate chunk (about.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import(/* webpackChunkName: "about" */ '../views/homeALL.vue'),
+  }
+
+
 ]
 
 const router = new VueRouter({
   routes
 })
-router.beforeEach((to,from,next)=>{
-  if(sessionStorage.getItem('token')){
+router.beforeEach((to, from, next) => {
+  if (sessionStorage.getItem('token')) {
     next()
-  }else{
-    if(to.path=='/'){
+  } else {
+    if (to.path == '/') {
       next()
-    }else{
+    } else {
       next('/')
       alert('请登录后在访问')
     }
