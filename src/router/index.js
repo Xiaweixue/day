@@ -17,5 +17,16 @@ const routes = [
 const router = new VueRouter({
   routes
 })
-
+router.beforeEach((to,from,next)=>{
+  if(sessionStorage.getItem('token')){
+    next()
+  }else{
+    if(to.path=='/'){
+      next()
+    }else{
+      next('/')
+      alert('请登录后在访问')
+    }
+  }
+})
 export default router
