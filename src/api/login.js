@@ -1,23 +1,25 @@
-import $axios from '../uslit/http'
-
-const login = (data) => {
-    return $axios({
-        url: "/admin/login",
-        method: 'post',
+import request from '../uslit/http'
+//登录接口
+const login=(data)=>{
+   return request({
+        url:'/admin/login',
+        method:'post',
         data
     })
 }
-
-const logOut=(data)=>{
-     return $axios ({
-        url:'/admin/logout',
-        method:'post',
-        data
-     })
+//用户身份
+const userinfos=()=>{
+    return request({
+        url:'/admin/admin',
+        method:'get',
+      
+    })
 }
 
 
+
 export default {
-    login,
-    logOut
+   login,
+   userinfos
+
 }
