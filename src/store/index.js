@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+//引入封装的axios方法
 import http from '../api/login'
+//引入封装的获取token和用户信息的方法 
 import { getToken, setUserInfo, getUserInfo, setToken } from '../uslit/auth'
 Vue.use(Vuex)
 
@@ -14,22 +16,28 @@ export default new Vuex.Store({
   getters: {
     //设置计算属性缓存token方法
     token(state) {
+      //返回出去
       return state.token
     },
     //设置计算属性缓存用户信息方法
     name(state) {
+      //返回出去
       return state.name
     }
   },
   mutations: {
     //设置异步调用token方法
     tokenI(state, token) {
+      //把token赋给state的变量
       state.token = token
+      //给本地设置token
       setToken(token)
     },
     //设置异步调用用户列表方法
     userinfo(state, user) {
+      //把用户信息赋给state的变量
       state.name = user
+      //给本地设置用户信息
       setUserInfo(user)
     }
   },
@@ -55,6 +63,7 @@ export default new Vuex.Store({
         //调用用户信息接口
         const response = await http.userinfos()
         //调用 mutations的方法存储用户信息
+        console.log(response);
         commit('userinfo', response.data.name)
         //把接口的用户信息返回出去
         return response.data.name
@@ -68,7 +77,7 @@ export default new Vuex.Store({
       //调用退出登录接口
       const pesponse = await http.Logout()
       console.log(pesponse.message);
-      //调用 mutations的方法删除token和用户信息
+      //调用 mutations的方法清空token和用户信息
       commit('tokenI', '')
       commit('userinfo', '')
       //把方法返回出去

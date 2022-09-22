@@ -1,8 +1,10 @@
 <template>
     <div>
         <!-- 面包屑 -->
+                      <!-- 如果在主页就隐藏 -->
         <el-card v-if="homepage">
-            <el-breadcrumb separator="/">
+            <el-breadcrumb separator="/">                                   
+                                                                            <!-- 动态获取面包屑 -->
                 <el-breadcrumb-item :to="{ path: '/' }"><span class="title">{{CrumbsJump}}</span></el-breadcrumb-item>
             </el-breadcrumb>
         </el-card>

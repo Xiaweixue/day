@@ -1,3 +1,5 @@
+
+//设置变量
 const TOKEN_KEY = "token"
 const USER_INFO_KEY = "userInfo"
 

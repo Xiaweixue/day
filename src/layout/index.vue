@@ -19,6 +19,7 @@
     </div>
 </template>
 <script>
+    //引入子组件
 import HeaDer from './header'
 import leftside from './leftside'
 import offside from './offside/index.vue'
@@ -29,11 +30,7 @@ export default {
         leftside,
         offside
     },
-    data() {
-        return {
-
-        }
-    }
+  
 }
 </script>
 <style lang="scss">

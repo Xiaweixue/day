@@ -46,7 +46,7 @@ export default {
             //登录验证
             this.$refs['form'].validate((valid) => {
                 if (!valid) return
-                console.log('1111');
+                // console.log('1111');
                 //调用登录方法
                 this.handleLogin()
             })
@@ -55,11 +55,15 @@ export default {
         },
         //登录方法
         async handleLogin() {
+            //调用登录接口
             const token = await this.$store.dispatch('loginL', this.loginForm)
-            if (!token) return
+            if (!token) return 
+            //调用用户信息接口
             const userinfo = await this.$store.dispatch('userinfoL')
             if (!userinfo) return
+            //跳转到主页
             this.$router.push('/layout')
+            //成功信息提示
             this.$message({
                 message: '恭喜你，登录成功',
                 type: 'success'
@@ -67,29 +71,6 @@ export default {
         }
 
     }
-    //登录接口
-    // async handleLogin() {
-    //     try {
-    //         const response = await http.login(this.loginForm)
-    //         sessionStorage.setItem('token', response.data.token)
-    //     } catch (e) {
-    //         console.log(e.message)
-    //     }
-
-    // },
-    // //用户信息接口
-    // async userinfo() {
-    //     try {
-    //         const response = await http.userinfo()
-    //         // console.log(response);
-    //         sessionStorage.setItem('name', response.data.name)
-    //     } catch (e) {
-    //         console.log(e.message);
-    //     }
-    // }
-
-
-
 }
 </script>
 <style lang="scss">

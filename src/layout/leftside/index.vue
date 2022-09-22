@@ -1,6 +1,7 @@
 <template>
     <div>
-
+         <!-- 侧边栏 加 导航栏 -->
+                 <!-- 设置高亮 -->
         <el-menu :default-active="sidebar" class="el-menu-vertical-demo" background-color="#545c64" text-color="#fff"
         active-text-color="#ffd04b" router>
 
@@ -37,6 +38,7 @@
 export default {
     computed: {
         sidebar() {
+            //获取路由路径 设置导航切换高亮
             return this.$route.path
         }
     }

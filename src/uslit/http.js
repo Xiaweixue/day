@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Loading, Message } from "element-ui";
 import store from "@/store";
+
 const exceptionMessage = {
     1000: '用户名或者密码发生错误',
     3000: ''

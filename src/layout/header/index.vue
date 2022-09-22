@@ -12,7 +12,7 @@
                         {{username}} <i class="el-icon-arrow-down el-icon--right"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item>修改密码</el-dropdown-item>
+                        <el-dropdown-item command="changepassword">修改密码</el-dropdown-item>
                         <el-dropdown-item command="logout">退出登录</el-dropdown-item>
 
                     </el-dropdown-menu>
@@ -35,26 +35,33 @@ export default {
             if (val === 'logout') {
                 //调用退出登录方法
                 this.logout()
+
+                //修改密码
+            } else if (val === 'changepassword') {
+                alert('修改成功')
             }
         },
         // 退出登录方法
         async logout() {
             try {
+                //调用store异步方法
                 const response = await this.$store.dispatch('logout')
-
+                //跳转登录页面   可以加定时器让他延迟跳转
                 this.$router.push('/')
-
+                //设置成功提示
                 this.$message({
-                    message: '恭喜你，登录成功',
+                    message: '恭喜你，退出成功',
                     type: 'success'
                 });
             } catch (e) {
+                //返回错误信息
                 console.log(e.message);
             }
         }
 
     },
     computed: {
+        //获取用户姓名
         username() {
             return this.$store.getters.name
         }

@@ -1,15 +1,17 @@
 <template>
     <div>
-        <!-- 侧边栏路由显示页面 -->
+        <!-- 后台显示页面 -->
         <div class="offside">
+            <!-- 面包屑 -->
             <bread></bread>
+            <!-- 路由 -->
          <router-view></router-view>
         </div>
     </div>
 </template>
 
 <script>
- // 调用面包屑
+ // 引入面包屑
  import bread from './bread'   
 export default {
     name: "offside",
