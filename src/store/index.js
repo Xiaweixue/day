@@ -11,7 +11,7 @@ export default new Vuex.Store({
     //设置token变量
     token: getToken() || '',
     //设置用户信息变量
-    name: getUserInfo() || ''
+    name: getUserInfo() || ""
   },
   getters: {
     //设置计算属性缓存token方法

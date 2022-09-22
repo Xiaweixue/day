@@ -12,12 +12,12 @@ router.beforeEach(async (to, from, next) => {
     if (token) {
         //如果有token的情况下路由要去到登录页面然他返回当前页面
         if (to.path === '/') { //如果在登录页面
-            next(from.path)//返回当前页面
+            next('/home')//返回当前页面
         } else { //如果不在登录页面
 
-            // 获取用户信息并赋给变量
-            let name = store.getters.name
-            if (name === "") { //判断用户是否为空 如果为空 调用获取用户信息方法
+            // 获取用户信息转化为字符串并赋给变量
+             const Name = JSON.stringify(store.getters.name)
+            if (Name === "" || Name === "{}") { //判断用户是否为空 如果为空 调用获取用户信息方法
                 console.log(123);
                 const userinfo = await store.dispatch('userinfoL')
                 if (userinfo) { // 判断调用方法
