@@ -1,10 +1,10 @@
 <template>
-    <div>首页</div>
+    <div></div>
 </template>
 
 <script>
-export default { 
- name:'index'
+export default {
+    name: 'bread'
 }
 </script>
 

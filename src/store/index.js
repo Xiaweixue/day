@@ -29,11 +29,11 @@ export default new Vuex.Store({
   },
   actions: {
     async loginL({ commit }, loginForm) {
-      console.log(loginForm);
+      // console.log(loginForm);
       try {
-        console.log(http);
+        // console.log(http);
         const response = await http.login(loginForm)
-        console.log(response, '111');
+        // console.log(response, '111');
         commit('tokenI', response.data.token)
         return response.data.token
       } catch (e) {

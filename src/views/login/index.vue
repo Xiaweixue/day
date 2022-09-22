@@ -23,6 +23,7 @@
 <script>
 
 export default {
+    name:'index',
     data() {
         return {
             loginForm: {
@@ -54,7 +55,7 @@ export default {
             if (!token) return
             const userinfo = await this.$store.dispatch('userinfoL')
             if (!userinfo) return
-            this.$router.push('/home')
+            this.$router.push('/layout')
             this.$message({
                 message: '恭喜你，登录成功',
                 type: 'success'
