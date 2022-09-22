@@ -16,10 +16,19 @@ const userinfos=()=>{
     })
 }
 
+const Logout =()=>{
+    return request({
+        url:'/admin/logout',
+        method:'post',
+        
+    })
+}
+
 
 
 export default {
    login,
-   userinfos
+   userinfos,
+   Logout
 
 }

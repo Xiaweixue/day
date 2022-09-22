@@ -28,7 +28,7 @@ service.interceptors.request.use(function (config) {
 service.interceptors.response.use(function (response) {
 
     if (response.status < 400) {
-        //出现错误
+       
 
         //成功
         return response.data
@@ -38,6 +38,7 @@ service.interceptors.response.use(function (response) {
         return
     }
     // loadingInstance.close()
+     //出现错误
     _showError(response.data.code, response.message)
 
     return response;
@@ -57,6 +58,7 @@ const _showError = (errorCode, message) => {
     title = exceptionMessage[errorCode] || message || '发生未知错误'
     Message.error(title)
 }
+// 设置所有传参都用data
 const services = (options) => {
     console.log(options);
     options.method = options.method || 'get'

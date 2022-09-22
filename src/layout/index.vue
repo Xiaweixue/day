@@ -1,12 +1,17 @@
 <template>
+    <!-- home主页面 -->
     <div class="home">
+        <!-- 调用头部 -->
         <HeaDer></HeaDer>
+        <!-- element布局容器 -->
         <el-container>
             <el-aside width="200px">
+                <!-- 调用侧边栏 -->
                 <leftside></leftside>
             </el-aside>
 
             <el-main>
+                <!-- 调用右侧router-view -->
                 <offside></offside>
             </el-main>
 

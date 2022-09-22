@@ -1,5 +1,6 @@
 <template>
     <div>
+        <!-- 登录页面 -->
         <div class="box">
             <div class="register">
                 <h1 class="top">梦学谷会员管理系统</h1>
@@ -23,13 +24,14 @@
 <script>
 
 export default {
-    name:'index',
+    name: 'index',
     data() {
         return {
             loginForm: {
                 username: '',
                 password: ''
             }, rules: {
+                //input 失焦验证
                 username: [
                     { required: true, message: '请输入用户名', trigger: 'blur' },
                     { min: 3, max: 12, message: '长度在 3 到 12 个字符', trigger: 'blur' }
@@ -41,9 +43,11 @@ export default {
         }
     }, methods: {
         login() {
+            //登录验证
             this.$refs['form'].validate((valid) => {
                 if (!valid) return
                 console.log('1111');
+                //调用登录方法
                 this.handleLogin()
             })
 
