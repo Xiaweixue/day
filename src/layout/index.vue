@@ -42,6 +42,7 @@ export default {
     background-color: #ffffff;
     color: #333;
     height: 90vh;
+    padding: 10px;
 }
 
 .col {
