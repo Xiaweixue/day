@@ -19,7 +19,7 @@
     </div>
 </template>
 <script>
-    //引入子组件
+//引入子组件
 import HeaDer from './header'
 import leftside from './leftside'
 import offside from './offside/index.vue'
@@ -29,8 +29,23 @@ export default {
         HeaDer,
         leftside,
         offside
-    },
-  
+    }
+
+    , watch: {
+        //路由跳转时获取用户信息列表
+        $route: {
+            async handler(val) {
+                //获取本地存储判断是否存在用户信息如果存在就不执行 如果不存在就调用获取用户信息接口
+                const name = localStorage.getItem('userInfo')
+                if (name === null || name === "") {
+                    const userinfo = await this.$store.dispatch('userinfoL')
+                    return
+                }
+            },
+            deep: true
+        }
+    }
+
 }
 </script>
 <style lang="scss">

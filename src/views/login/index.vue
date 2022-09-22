@@ -57,7 +57,7 @@ export default {
         async handleLogin() {
             //调用登录接口
             const token = await this.$store.dispatch('loginL', this.loginForm)
-            if (!token) return 
+            if (!token) return
             //调用用户信息接口
             const userinfo = await this.$store.dispatch('userinfoL')
             if (!userinfo) return

@@ -63,7 +63,7 @@ export default new Vuex.Store({
         //调用用户信息接口
         const response = await http.userinfos()
         //调用 mutations的方法存储用户信息
-        console.log(response);
+        
         commit('userinfo', response.data.name)
         //把接口的用户信息返回出去
         return response.data.name
