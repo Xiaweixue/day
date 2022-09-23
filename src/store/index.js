@@ -76,7 +76,6 @@ export default new Vuex.Store({
     async logout({ commit }) {
       //调用退出登录接口
       const pesponse = await http.Logout()
-      console.log(pesponse.message);
       //调用 mutations的方法清空token和用户信息
       commit('tokenI', '')
       commit('userinfo', '')

@@ -38,7 +38,7 @@ export default {
                 //获取本地存储判断是否存在用户信息如果存在就不执行 如果不存在就调用获取用户信息接口
                 const name = localStorage.getItem('userInfo')
                 if (name === null || name === "") {
-                    const userinfo = await this.$store.dispatch('userinfoL')
+                    await this.$store.dispatch('userinfoL')
                     return
                 }
             },
