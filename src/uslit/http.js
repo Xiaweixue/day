@@ -12,13 +12,13 @@ const service = axios.create({
 })
 
 service.interceptors.request.use(function (config) {
-   
-
+    //Loading加载
+    // loadingInstance = Loading.service({ fullscreen: true })
     // 获取vuex的token
     const token = store.getters.token
     // 当token存在的时候，则将token通过请求头发送给后台
     if (token) config.headers.authorization = "Bearer " + token
-   
+
     return config;
 }, function (error) {
 
@@ -27,9 +27,10 @@ service.interceptors.request.use(function (config) {
 
 
 service.interceptors.response.use(function (response) {
-
+    // // 隐藏 Loading 效果
+    // loadingInstance.close()
     if (response.status < 400) {
-       
+
 
         //成功
         return response.data
@@ -38,8 +39,8 @@ service.interceptors.response.use(function (response) {
     if (response.status === 401) {
         return
     }
-    // loadingInstance.close()
-     //出现错误
+
+    //出现错误
     _showError(response.data.code, response.message)
 
     return response;
