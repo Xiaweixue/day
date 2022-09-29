@@ -62,7 +62,7 @@ const _showError = (errorCode, message) => {
 }
 // 设置所有传参都用data
 const services = (options) => {
-    console.log(options);
+    // console.log(options);
     options.method = options.method || 'get'
     if (options.method.toLowerCase() === 'get') {
         options.params = options.data || options.params

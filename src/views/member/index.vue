@@ -1,181 +1,209 @@
 <template>
     <div>
-        <el-form ref="query" :inline="true" :model="query" class="demo-form-inline">
-            <el-form-item prop="cardNum">
-                <el-input v-model="query.cardNum" placeholder="会员卡号"></el-input>
-            </el-form-item>
-            <el-form-item prop="name">
-                <el-input v-model="query.name" placeholder="会员名字"></el-input>
-            </el-form-item>
-            <el-form-item prop="payType">
-                <el-select v-model="query.payType" placeholder="支付类型">
-                    <el-option v-for="(item,index) in arr" :key="index" :label="item.name" :value="item.id"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item prop="birthday">
-                <el-date-picker type="date" placeholder="选择日期" value-format="yyyy-MM-dd" v-model="query.birthday">
-                </el-date-picker>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" @click="inquire">查询</el-button>
+        <searchForm v-model.sync="query" :queryDate="queryDate" ref="vacumup">
+            <template v-slot:queryData>
+                <el-button type="primary" @click="select">查询</el-button>
                 <el-button type="primary" @click="Added">新增</el-button>
-                <el-button @click="reset('query')">重置</el-button>
-            </el-form-item>
-        </el-form>
+                <el-button @click="empty">重置</el-button>
+            </template>
+        </searchForm>
 
 
-        <el-table :data="list" style="width: 100%">
-            <el-table-column type="index">
-            </el-table-column>
-            <el-table-column prop="cardNum" label="会员卡号">
-            </el-table-column>
-            <el-table-column prop="name" label="会员姓名">
-            </el-table-column>
-            <el-table-column prop="birthday" label="会员生日">
-            </el-table-column>
-            <el-table-column prop="phone" label="手机号码">
-            </el-table-column>
-            <el-table-column prop="integral" label="可用积分">
-            </el-table-column>
-            <el-table-column prop="money" label="开卡金额">
-            </el-table-column>
-            <el-table-column prop="payType" label="支付类型">
-                <template slot-scope="scope">
-                    <div>
-                        {{scope.row.payType===1?'现金':scope.row.payType===2?'微信':scope.row.payType===3?'支付宝':scope.row.payType===4?'银行卡':''}}
-                    </div>
-                </template>
-            </el-table-column>
-            <el-table-column prop="address" label="会员地址">
-            </el-table-column>
-            <el-table-column label="操作">
-                <template slot-scope="scope">
-                    <el-button size="mini" @click="compile(scope.row.id)">编辑</el-button>
-                    <el-button size="mini" type="danger" @click="expurgate(scope.row.id)">删除</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="page"
-            :page-sizes="[10, 20, 30, 40]" :page-size="size" layout="total, sizes, prev, pager, next, jumper"
-            :total="total">
-        </el-pagination>
+        <tableForm :tableData="list" :column="column" :total="total" :page="page" :size="size" @page="getpage"
+            @size="getsize" :falg="flag">
+            <template v-slot:getData="data">
+                <el-button size="mini" @click="redact(data.data)">编辑</el-button>
+                <el-button size="mini" type="danger" @click="del(data.data)">删除</el-button>
+            </template>
+        </tableForm>
 
-        <!-- Form -->
-        <el-dialog :title="title" :visible.sync="dialogFormVisible" label-width="80px">
-            <el-form :model="AddedForm" label-width="100px" ref="AddedForm" :rules="rules">
-                <el-form-item label="会员卡号" prop="cardNum">
-                    <el-input v-model="AddedForm.cardNum"></el-input>
-                </el-form-item>
-                <el-form-item label="会员姓名" prop="name">
-                    <el-input v-model="AddedForm.name"></el-input>
-                </el-form-item>
-                <el-form-item prop="birthday">
-                    <el-date-picker type="date" placeholder="会员生日" value-format="yyyy-MM-dd"
-                        v-model="AddedForm.birthday">
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item label="手机号码" prop="phone">
-                    <el-input v-model="AddedForm.phone"></el-input>
-                </el-form-item>
-                <el-form-item label="开卡金额" prop="money">
-                    <el-input v-model="AddedForm.money"></el-input>
-                </el-form-item>
-                <el-form-item label="可用积分" prop="integral">
-                    <el-input v-model="AddedForm.integral"></el-input>
-                </el-form-item>
-                <el-form-item prop="payType">
-                    <el-select v-model="AddedForm.payType" placeholder="支付类型">
-                        <el-option v-for="(item,index) in arr" :key="index" :label="item.name" :value="item.id">
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="会员地址" prop="address">
-                    <el-input type="textarea" v-model="AddedForm.address"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="AddEditsviewsnakeaddEdit">确 定</el-button>
-            </div>
-        </el-dialog>
+        <ModalForm :dialogvisible.sync="dialogvisible" v-model.sync="showForm" :ShowDate="ShowDate" :title="title"
+            :rules="rules" ref="AddedForm" @confirm="confirm">
+        </ModalForm>
     </div>
 </template>
 
 <script>
+import tableForm from '../../components/tableForm.vue'
+import searchForm from '../../components/searchForm.vue'
+import ModalForm from '../../components/ModalForm.vue'
 import http from '../../api/member'
-import payment from './payment'
+
 export default {
-    name: 'index',
+    name: 'member',
+    components: {
+        tableForm,
+        searchForm,
+        ModalForm
+    },
     data() {
         return {
-            list: [],
-            page: 1,
-            size: 10,
-            query: {
-                cardNum: "",
-                name: '',
-                payType: '',
-                birthday: "",
-
+            rules: {
+                cardNum: [
+                    { required: true, message: '请输入会员卡号', trigger: 'blur' },
+                    { min: 3, max: 12, message: '长度在 3 到 12个字符', trigger: 'blur' }
+                ],
+                name: [
+                    { required: true, message: '请输入会员姓名', trigger: 'blur' },
+                    { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+                ], payType: [
+                    { required: true, message: '请选择支付类型', trigger: 'change' }
+                ],
             },
-            total: 0,
-            arr: payment.arr,
-            dialogFormVisible: false,
             title: '会员添加',
-            AddedForm: {
+            showForm: {
                 cardNum: "",
                 name: "",
                 birthday: "",
                 phone: "",
                 money: "",
                 integral: "",
+                payType: "",
+                address: "",
+            },
+            ShowDate: [
+                {
+                    type: 'input',
+                    name: 'cardNum',
+                    label: '会员卡号',
+                },
+                {
+                    type: 'input',
+                    name: 'name',
+                    label: '会员姓名',
+                },
+                {
+                    type: 'date',
+                    name: 'birthday',
+                    label: '会员生日',
+                },
+                {
+                    type: 'input',
+                    name: 'phone',
+                    label: '手机号码',
+                },
+                {
+                    type: 'input',
+                    name: 'money',
+                    label: '开卡金额',
+                },
+                {
+                    type: 'input',
+                    name: 'integral',
+                    label: '可用积分',
+                },
+                {
+                    type: 'select',
+                    name: 'payType',
+                    label: '支付类型',
+                },
+                {
+                    type: 'textarea',
+                    name: 'address',
+                    label: '会员地址',
+                },
+            ],
+            flag: true,
+            dialogvisible: false,
+            queryDate: [
+                {
+                    type: 'input',
+                    prop: 'cardNum',
+                    name: '会员卡号'
+                }, {
+                    type: 'input',
+                    prop: 'name',
+                    name: '会员名字',
+                }, {
+                    type: 'select',
+                    prop: 'payType',
+                    name: '支付类型'
+                }, {
+                    type: 'date',
+                    prop: 'address',
+                    name: '出生日期'
+                }, {
+                    type: 'slot',
+                    prop: 'queryData'
+                }
+            ],
+            list: [],
+            total: 0,
+            page: 1,
+            size: 10,
+            query: {
+                cardNum: '',
+                name: '',
                 payType: '',
-                address: ''
-            }, rules: {
-                cardNum: [
-                    { required: true, message: '请输入会员卡号', trigger: 'blur' },
-                    { min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur' }
-                ], name: [
-                    { required: true, message: '请输入会员名称', trigger: 'blur' },
-                    { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-                ], payType: [
-                    { required: true, message: '请选择支付类型', trigger: 'change' }
-                ],
-            }, id: ''
+                address: '',
 
+            }, column: [
+                {
+                    type: 'index',
+                    label: '序号',
+                    width: 60,
+                    value: 'type'
+                },
+                {
+                    prop: 'cardNum',
+                    label: '会员卡号',
 
+                }, {
+                    prop: 'name',
+                    label: '会员姓名',
+
+                }, {
+                    prop: 'birthday',
+                    label: '会员生日',
+
+                }, {
+                    prop: 'phone',
+                    label: '手机号码',
+
+                }, {
+                    prop: 'integral',
+                    label: '可用积分',
+
+                }, {
+                    prop: 'money',
+                    label: '开卡金额',
+
+                }, {
+                    prop: 'payType',
+                    label: '支付类型',
+
+                    formatter: (row, column, cellValue, index) => {
+                        return row.payType === 1 ? '现金' : row.payType === 2 ? '微信' : row.payType === 3 ? '支付宝' : row.payType === 4 ? '银行卡' : ''
+                    },
+                }, {
+                    prop: 'address',
+                    label: '会员地址',
+
+                }, {
+                    label: '插槽',
+                    type: 'slot',
+                    name: 'getData'
+                }
+            ],
+            id: ''
         }
     }, methods: {
-        handleSizeChange(size) {
-
-            this.size = size
-            this.getList()
-        },
-        handleCurrentChange(page) {
-            this.page = page
-            // console.log(page)
-            this.getList()
-        },
         async getList() {
             try {
                 const response = await http.memberList(this.page, this.size, this.query)
+                // console.log(response);
                 this.list = response.data.rows
                 this.total = response.total
             } catch (e) {
-                console.log(e.message);
+                console.log(e.massage);
             }
-        }, inquire() {
-            console.log(this.query.birthday);
-            this.getList()
-        }, reset(formName) {
-            this.$refs[formName].resetFields();
-        }, expurgate(id) {
+        }, del(row) {
             this.$confirm('确认删除这条记录吗？', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(async () => {
-                const response = await http.memberDelete(id)
+                const response = await http.memberDelete(row.id)
                 this.getList()
                 this.$message({
                     type: 'success',
@@ -187,62 +215,51 @@ export default {
                     message: '已取消删除'
                 });
             });
+        }, getpage(page) {
+            this.page = page
+            this.getList()
+        }, getsize(size) {
+            this.size = size
+            this.getList()
+        }, select() {
+            this.size = 1
+            this.getList()
+        }, empty() {
+            this.$refs.vacumup.empty();
+        }, async confirm() {
+
+            this.title === '会员添加' ? await this.successfullyadded() : this.title === '会员编辑' ? await this.Editsuccess() : ''
+            this.$refs.AddedForm.empty()
         }, Added() {
             this.title = '会员添加'
-            // this.reset('AddedForm')
-            this.dialogFormVisible = true
-
-        }, async compile(id) {
+            this.dialogvisible = true
+        }, async redact(row) {
             this.title = '会员编辑',
-                this.id = id
+                this.id = row.id
+            this.dialogvisible = true
             try {
-                const response = await http.editinginterface(id)
-                this.AddedForm = response.data
-                this.getList()
+                const response = await http.editinginterface(this.id)
+                this.showForm = response.data
             } catch (e) {
                 console.log(e.message);
             }
-            this.dialogFormVisible = true
-        }, AddEditsviewsnakeaddEdit() {
-            this.$refs['AddedForm'].validate((valid) => {
-                if (!valid) return
-                if (this.title == '会员添加') {
-                    this.successfullyadded()
-                } else if (this.title == '会员编辑') {
-                    this.Editsuccess()
-                }
-                this.dialogFormVisible = false
-            });
-
         }, async successfullyadded() {
             try {
-                const response = await http.addinginterfaces(this.AddedForm)
-
+                const response = await http.addinginterfaces(this.showForm)
+                this.dialogvisible=false
                 this.$message({
                     type: 'success',
                     message: '添加成功!'
                 });
-                this.title = '会员添加'
-                this.reset('AddedForm')
                 this.getList()
             } catch (e) {
                 console.log(e.message);
             }
-        }, async Editsuccess() {
+        },
+        async Editsuccess() {
             try {
-                const response = await http.Editsuccess(this.id, this.AddedForm)
-
-                this.AddedForm = {
-                    cardNum: "",
-                    name: "",
-                    birthday: "",
-                    phone: "",
-                    money: "",
-                    integral: "",
-                    payType: '',
-                    address: ''
-                }
-
+                const response = await http.Editsuccess(this.id, this.showForm)
+                this.dialogvisible = false
                 this.$message({
                     type: 'success',
                     message: '更新成功!'
@@ -251,10 +268,10 @@ export default {
             } catch (e) {
                 console.log(e.message);
             }
-        }
+        },
     }, created() {
         this.getList()
-    }
+    },
 }
 </script>
 

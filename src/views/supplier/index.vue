@@ -1,114 +1,136 @@
 <template>
     <div>
-        <el-form ref="query" :inline="true" :model="query" class="demo-form-inline">
-            <el-form-item prop="name">
-                <el-input v-model="query.name" placeholder="供应商名称"></el-input>
-            </el-form-item>
-            <el-form-item prop="linkman">
-                <el-input v-model="query.linkman" placeholder="联系人"></el-input>
-            </el-form-item>
-            <el-form-item prop="mobile">
-                <el-input v-model="query.mobile" placeholder="联系电话"></el-input>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" @click="inquire">查询</el-button>
+        <searchForm v-model.sync="query" :queryDate="queryDate">
+            <template v-slot:queryData>
+                <el-button type="primary" @click="select">查询</el-button>
                 <el-button type="primary" @click="Added">新增</el-button>
-                <el-button @click="reset('query')">重置</el-button>
-            </el-form-item>
-        </el-form>
-        <el-table :data="list" style="width: 100%">
-            <el-table-column type="index" label="序号">
-            </el-table-column>
-            <el-table-column prop="name" label="供应商名称">
-            </el-table-column>
-            <el-table-column prop="linkman" label="联系人">
-            </el-table-column>
-            <el-table-column prop="mobile" label="联系电话">
-            </el-table-column>
-            <el-table-column prop="remark" label="备注">
-            </el-table-column>
-            <el-table-column label="操作">
-                <template slot-scope="scope">
-                    <el-button size="mini" @click="compile(scope.row.id)">编辑</el-button>
-                    <el-button size="mini" type="danger" @click="expurgate(scope.row.id)">删除</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="page"
-            :page-sizes="[10, 20, 30, 40]" :page-size="size" layout="total, sizes, prev, pager, next, jumper"
-            :total="total">
-        </el-pagination>
-        <el-dialog :title="title" :visible.sync="dialogFormVisible" label-width="80px">
-            <el-form :model="AddedForm" label-width="100px" ref="AddedForm" :rules="rules">
-                <el-form-item label="供应商名称" prop="name">
-                    <el-input v-model="AddedForm.name"></el-input>
-                </el-form-item>
-                <el-form-item label="联系人" prop="linkman">
-                    <el-input v-model="AddedForm.linkman"></el-input>
-                </el-form-item>
-
-                <el-form-item label="联系电话" prop="mobile">
-                    <el-input v-model="AddedForm.mobile"></el-input>
-                </el-form-item>
-                <el-form-item label="备注" prop="remark">
-                    <el-input v-model="AddedForm.remark"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="AddEditsviewsnakeaddEdit">确 定</el-button>
-            </div>
-        </el-dialog>
+                <el-button @click="empty">重置</el-button>
+            </template>
+        </searchForm>
+        <tableForm :tableData="list" :column="column" :total="total" :page="page" :size="size" :flag="flag"
+            @page="getpage" @size="getsize">
+            <template v-slot:getData="data">
+                <el-button size="mini" @click="redact(data.data)">编辑</el-button>
+                <el-button size="mini" type="danger" @click="del(data.data)">删除</el-button>
+            </template>
+        </tableForm>
+        <ModalForm :dialogvisible.sync="dialogvisible" v-model.sync="showForm" :ShowDate="ShowDate" :title="title"
+            :rules="rules" ref="AddedForm" @confirm="confirm">
+        </ModalForm>
     </div>
 </template>
 
 <script>
+import searchForm from '../../components/searchForm.vue'
+import tableForm from '../../components/tableForm.vue'
 import http from '../../api/supplier'
+import ModalForm from '../../components/ModalForm.vue'
 export default {
     name: 'index',
+    components: {
+        tableForm,
+        searchForm,
+        ModalForm
+    },
     data() {
         return {
-            list: [],
+            rules: {
+                name: [
+                    { required: true, message: '请输入供应商名称', trigger: 'blur' },
+                    { min: 3, max: 12, message: '长度在 3 到 12个字符', trigger: 'blur' }
+                ],
+                linkman: [
+                    { required: true, message: '请输入联系人', trigger: 'blur' },
+                    { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+                ],
+            },
+            title: '供应商添加',
+            showForm: {
+                linkman: "",
+                mobile: "",
+                name: "",
+                remark: "",
+            },
+            ShowDate: [
+                {
+                    type: 'input',
+                    name: 'name',
+                    label: '供应商名称',
+                },
+                {
+                    type: 'input',
+                    name: 'linkman',
+                    label: '联系人',
+                },
+                {
+                    type: 'input',
+                    name: 'mobile',
+                    label: '联系电话',
+                },
+                {
+                    type: 'textarea',
+                    name: 'remark',
+                    label: '备注',
+                },
+
+            ],
+            dialogvisible: false,
+            queryDate: [
+                {
+                    name: '供应商名称',
+                    prop: 'name',
+                    type: 'input'
+                },
+                {
+                    name: '联系人',
+                    prop: 'linkman',
+                    type: 'input'
+                },
+                {
+                    name: '联系电话',
+                    prop: 'mobile',
+                    type: 'input'
+                },
+                {
+                    prop: 'queryData',
+                    type: 'slot'
+                },
+            ],
+            query: {
+                name: '',
+                linkman: '',
+                mobile: ''
+            },
+            flag: true,
+            total: 0,
             page: 1,
             size: 10,
-            query: {
-                name: "",
-                linkman: '',
-                mobile: "",
-
-            },
-            total: 0,
-            dialogFormVisible: false,
-            title: '供应商添加',
-            AddedForm: {
-                name: "",
-                linkman: '',
-                mobile: "",
-                remark: ''
-            }, rules: {
-                name: [
-                    { required: true, message: '请输入会员卡号', trigger: 'blur' },
-                    { min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur' }
-                ], linkman: [
-                    { required: true, message: '请输入会员名称', trigger: 'blur' },
-                    { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-                ], mobile: [
-                    { required: true, message: '请输入会员名称', trigger: 'blur' },
-                    { min: 11, max: 11, message: '长度在 11 字符', trigger: 'blur' }
-                ],
-            }, id: ''
+            list: [],
+            column: [{
+                type: 'index',
+                label: '序号',
+                width: 60,
+                value: 'type'
+            }, {
+                label: '供应商名称',
+                prop: 'name',
+            }, {
+                label: '联系人',
+                prop: 'linkman',
+            }, {
+                label: '联系电话',
+                prop: 'mobile',
+            }, {
+                label: '备注',
+                prop: 'remark',
+            }, {
+                label: '插槽',
+                type: 'slot',
+                name: 'getData'
+            }]
         }
     }, methods: {
-        handleSizeChange(size) {
 
-            this.size = size
-            this.getList()
-        },
-        handleCurrentChange(page) {
-            this.page = page
-            // console.log(page)
-            this.getList()
-        },
         async getList() {
             try {
                 const response = await http.memberList(this.page, this.size, this.query)
@@ -117,18 +139,71 @@ export default {
             } catch (e) {
                 console.log(e.message);
             }
-        }, inquire() {
-            console.log(this.query.birthday);
+        },
+        getpage(page) {
+            this.page = page
             this.getList()
-        }, reset(formName) {
-            this.$refs[formName].resetFields();
-        }, expurgate(id) {
+        },
+        getsize(size) {
+            this.size = size
+            this.getList()
+        },
+        select() {
+            this.size = 1
+            this.getList()
+        },
+        empty() {
+            this.$refs.vacumup.empty();
+        },
+        async confirm() {
+
+            this.title === '供应商添加' ? await this.successfullyadded() : this.title === '供应商编辑' ? await this.Editsuccess() : ''
+            this.$refs.AddedForm.empty()
+        }, Added() {
+            this.title = '供应商添加'
+            this.dialogvisible = true
+        }, async redact(row) {
+            this.title = '供应商编辑',
+                this.id = row.id
+            this.dialogvisible = true
+            try {
+                const response = await http.editinginterface(this.id)
+                this.showForm = response.data
+            } catch (e) {
+                console.log(e.message);
+            }
+        }, async successfullyadded() {
+            try {
+                const response = await http.addinginterfaces(this.showForm)
+                this.dialogvisible = false
+                this.$message({
+                    type: 'success',
+                    message: '添加成功!'
+                });
+                this.getList()
+            } catch (e) {
+                console.log(e.message);
+            }
+        },
+        async Editsuccess() {
+            try {
+                const response = await http.Editsuccess(this.id, this.showForm)
+                this.dialogvisible = false
+                this.$message({
+                    type: 'success',
+                    message: '更新成功!'
+                });
+                this.getList()
+            } catch (e) {
+                console.log(e.message);
+            }
+        }, del(row) {
             this.$confirm('确认删除这条记录吗？', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(async () => {
-                const response = await http.memberDelete(id)
+                const response = await http.memberDelete(row.id)
                 this.getList()
                 this.$message({
                     type: 'success',
@@ -140,66 +215,6 @@ export default {
                     message: '已取消删除'
                 });
             });
-        }, Added() {
-            this.title = '供应商添加'
-            // this.reset('AddedForm')
-            this.dialogFormVisible = true
-
-        }, async compile(id) {
-            this.title = '供应商编辑',
-                this.id = id
-            try {
-                const response = await http.editinginterface(id)
-                this.AddedForm = response.data
-                this.getList()
-            } catch (e) {
-                console.log(e.message);
-            }
-            this.dialogFormVisible = true
-        }, AddEditsviewsnakeaddEdit() {
-            this.$refs['AddedForm'].validate((valid) => {
-                if (!valid) return
-                if (this.title == '供应商添加') {
-                    this.successfullyadded()
-                } else if (this.title == '供应商编辑') {
-                    this.Editsuccess()
-                }
-                this.dialogFormVisible = false
-            });
-
-        }, async successfullyadded() {
-            try {
-                const response = await http.addinginterfaces(this.AddedForm)
-
-                this.$message({
-                    type: 'success',
-                    message: '添加成功!'
-                });
-                this.title = '供应商添加'
-                this.reset('AddedForm')
-                this.getList()
-            } catch (e) {
-                console.log(e.message);
-            }
-        }, async Editsuccess() {
-            try {
-                const response = await http.Editsuccess(this.id, this.AddedForm)
-
-                this.AddedForm = {
-                    name: "",
-                    linkman: '',
-                    mobile: "",
-                    remark: ''
-                }
-
-                this.$message({
-                    type: 'success',
-                    message: '更新成功!'
-                });
-                this.getList()
-            } catch (e) {
-                console.log(e.message);
-            }
         }
     }, created() {
         this.getList()

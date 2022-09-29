@@ -85,7 +85,7 @@
                 <span>
                     <el-form :inline="true" :model="query1" ref="MeForm" class="demo-form-inline">
                         <el-form-item prop="name">
-                            <el-input v-model="MenmberTypeQuery.name" placeholder="商品名称"></el-input>
+                            <el-input v-model="query1.name" placeholder="商品名称"></el-input>
                         </el-form-item>
                         <el-form-item>
                             <el-button type="primary" @click="onSubmitQuery">查询</el-button>
@@ -99,7 +99,8 @@
                         <el-table-column prop="linkman" label="联系人">
                         </el-table-column>
                     </el-table>
-                    <Paginat :total="total" :page="page" :size="size" @PageNum="Laypage" @PageSize="LaySize"></Paginat>
+                    <Paginat :total="total" :page="page" :size="size" @PageNum="Laypage" @PageSize="LaySize">
+                    </Paginat>
                 </span>
             </el-dialog>
         </div>
@@ -113,7 +114,7 @@ export default {
     data() {
         return {
             list: [],// 列表渲染数组
-            list1:[], //供应商渲染数组
+            list1: [], //供应商渲染数组
             page: 1, //列表分页
             size: 20,//列表分页
             query: {//列表搜索
@@ -123,15 +124,10 @@ export default {
             },
             query1: {//供应商搜索
                 name: "",
-                linkman: ''
-              
             },
-            total: 0,//供应商分页
-            total:1,//供应商分页
-            page1: 1,//供应商分页
-            size1: 20,//供应商分页
+            total: 1,//列表分页
             dialogFormVisible: false,//添加编辑模态框显示隐藏
-            dialogVisible2:false,//供应商模态框显示隐藏
+            dialogVisible2: false,//供应商模态框显示隐藏
             title: '商品添加',//动态模态框名字
             AddedForm: {//添加编辑模态框数据
                 name: "",
@@ -159,11 +155,11 @@ export default {
     }, methods: {
         //分页事件
         handleSizeChange(size) {
-       
+
             this.size = size
             this.getList()
         },
-         //分页事件
+        //分页事件
         handleCurrentChange(page) {
             this.page = page
             // console.log(page)
@@ -179,7 +175,7 @@ export default {
             } catch (e) {
                 console.log(e.message);
             }
-        }, 
+        },
         //搜索
         inquire() {
             this.getList()
@@ -214,7 +210,7 @@ export default {
             // this.reset('AddedForm')
             this.dialogFormVisible = true
 
-        }, 
+        },
         //编辑显示模态框并获取id
         async compile(id) {
             this.title = '商品编辑',
@@ -227,7 +223,7 @@ export default {
                 console.log(e.message);
             }
             this.dialogFormVisible = true
-        }, 
+        },
         //添加编辑事件
         AddEditsviewsnakeaddEdit() {
             this.$refs['AddedForm'].validate((valid) => {
@@ -277,32 +273,43 @@ export default {
             } catch (e) {
                 console.log(e.message);
             }
-        }, 
+        },
         //获取搜索供应商接口
         async focus() {
+
             try {
-                const response = await http.memberList(this.page1, this.size1, this.query1)
+                const response = await http.memberLi(this.page, this.size, this.query1)
                 console.log(response);
-                this.list1 = response.rows
-                this.total = response.total1
+                this.list1 = response.data.rows
+                this.total1 = response.total
             } catch (e) {
                 console.log(e.message);
             }
+            this.dialogVisible2 = true
         },
         //关闭搜索供应商模态框
         a(val) {
-            console.log(val, 123);
             this.dialogVisible2 = false
-            this.MenmberTypeQuery.supplierName = val.name
-            console.log(val.name);
+            this.query.supplierName = val.name
+
         },
         //搜索供应商分页
-        Laypage(page){
-          this.page1=page
-        } ,
-         //搜索供应商分页
-        LaySize(size){
-          this.size1=size
+        Laypage(page) {
+            this.page = page
+        },
+        //搜索供应商分页
+        LaySize(size) {
+            this.size = size
+        },
+        async onSubmitQuery() {
+            try {
+                const response = await http.memberLi(this.page1, this.size1, this.query1)
+                console.log(response);
+                this.list1 = response.data.rows
+                this.total1 = response.total
+            } catch (e) {
+                console.log(e.message);
+            }
         }
     }, created() {
         //调用列表渲染接口
